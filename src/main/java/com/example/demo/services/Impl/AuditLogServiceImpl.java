@@ -6,6 +6,7 @@ import com.example.demo.models.Listing;
 import com.example.demo.repositories.AuditLogRepository;
 import com.example.demo.repositories.ListingRepository;
 import com.example.demo.services.AuditLogService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,18 +23,19 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Autowired
     private ListingRepository listingRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public AuditLogDTO createAuditLog(AuditLogDTO auditLogDTO) {
-        AuditLog auditLog = new AuditLog();
-        auditLog.setAction(auditLogDTO.getAction());
-        auditLog.setDetails(auditLogDTO.getDetails());
+        AuditLog auditLog = modelMapper.map(auditLogDTO, AuditLog.class);
 
         Listing listing = listingRepository.findById(auditLogDTO.getListingId())
                 .orElseThrow(() -> new RuntimeException("Listing not found"));
         auditLog.setListing(listing);
 
         AuditLog savedAuditLog = auditLogRepository.save(auditLog);
-        return convertToDTO(savedAuditLog);
+        return modelMapper.map(savedAuditLog, AuditLogDTO.class);
     }
 
     @Override
@@ -41,11 +43,9 @@ public class AuditLogServiceImpl implements AuditLogService {
         AuditLog auditLog = auditLogRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("AuditLog not found"));
 
-        auditLog.setAction(auditLogDTO.getAction());
-        auditLog.setDetails(auditLogDTO.getDetails());
-
+        modelMapper.map(auditLogDTO, auditLog);
         AuditLog updatedAuditLog = auditLogRepository.save(auditLog);
-        return convertToDTO(updatedAuditLog);
+        return modelMapper.map(updatedAuditLog, AuditLogDTO.class);
     }
 
     @Override
@@ -57,21 +57,14 @@ public class AuditLogServiceImpl implements AuditLogService {
     public AuditLogDTO getAuditLogById(UUID id) {
         AuditLog auditLog = auditLogRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("AuditLog not found"));
-        return convertToDTO(auditLog);
+        return modelMapper.map(auditLog, AuditLogDTO.class);
     }
 
     @Override
     public List<AuditLogDTO> getAllAuditLogs() {
         List<AuditLog> auditLogs = auditLogRepository.findAll();
-        return auditLogs.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
-
-    private AuditLogDTO convertToDTO(AuditLog auditLog) {
-        AuditLogDTO dto = new AuditLogDTO();
-        dto.setId(auditLog.getId());
-        dto.setAction(auditLog.getAction());
-        dto.setDetails(auditLog.getDetails());
-        dto.setListingId(auditLog.getListing().getId());
-        return dto;
+        return auditLogs.stream()
+                .map(auditLog -> modelMapper.map(auditLog, AuditLogDTO.class))
+                .collect(Collectors.toList());
     }
 }

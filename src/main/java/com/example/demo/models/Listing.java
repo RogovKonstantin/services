@@ -2,6 +2,8 @@ package com.example.demo.models;
 
 import com.example.demo.models.basemodels.IdDateTimeModel;
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -15,7 +17,7 @@ public class Listing extends IdDateTimeModel {
     private String description;
 
     @Column(nullable = false)
-    private Double price;
+    private BigDecimal price;
 
     @Column(nullable = false)
     private String location;
@@ -52,11 +54,11 @@ public class Listing extends IdDateTimeModel {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

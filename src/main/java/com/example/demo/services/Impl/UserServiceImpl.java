@@ -4,6 +4,7 @@ import com.example.demo.services.dtos.UserDTO;
 import com.example.demo.models.User;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.services.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-
+        User user = modelMapper.map(userDTO, User.class);
         User savedUser = userRepository.save(user);
-        return convertToDTO(savedUser);
+        return modelMapper.map(savedUser, UserDTO.class);
     }
 
     @Override
@@ -32,11 +33,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-
+        modelMapper.map(userDTO, user);
         User updatedUser = userRepository.save(user);
-        return convertToDTO(updatedUser);
+        return modelMapper.map(updatedUser, UserDTO.class);
     }
 
     @Override
@@ -48,20 +47,14 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return convertToDTO(user);
+        return modelMapper.map(user, UserDTO.class);
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return users.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
-
-    private UserDTO convertToDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        return dto;
+        return users.stream()
+                .map(user -> modelMapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
     }
 }

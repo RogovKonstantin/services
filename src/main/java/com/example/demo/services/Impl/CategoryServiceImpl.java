@@ -4,6 +4,7 @@ import com.example.demo.services.dtos.CategoryDTO;
 import com.example.demo.models.Category;
 import com.example.demo.repositories.CategoryRepository;
 import com.example.demo.services.CategoryService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +18,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
-        Category category = new Category();
-        category.setName(categoryDTO.getName());
-
+        Category category = modelMapper.map(categoryDTO, Category.class);
         Category savedCategory = categoryRepository.save(category);
-        return convertToDTO(savedCategory);
+        return modelMapper.map(savedCategory, CategoryDTO.class);
     }
 
     @Override
@@ -31,10 +33,9 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        category.setName(categoryDTO.getName());
-
+        modelMapper.map(categoryDTO, category);
         Category updatedCategory = categoryRepository.save(category);
-        return convertToDTO(updatedCategory);
+        return modelMapper.map(updatedCategory, CategoryDTO.class);
     }
 
     @Override
@@ -46,19 +47,14 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDTO getCategoryById(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        return convertToDTO(category);
+        return modelMapper.map(category, CategoryDTO.class);
     }
 
     @Override
     public List<CategoryDTO> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
-        return categories.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
-
-    private CategoryDTO convertToDTO(Category category) {
-        CategoryDTO dto = new CategoryDTO();
-        dto.setId(category.getId());
-        dto.setName(category.getName());
-        return dto;
+        return categories.stream()
+                .map(category -> modelMapper.map(category, CategoryDTO.class))
+                .collect(Collectors.toList());
     }
 }
