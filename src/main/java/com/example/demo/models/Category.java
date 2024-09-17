@@ -8,13 +8,11 @@ import java.util.List;
 @Table(name = "categories")
 public class Category extends IdDateTimeModel {
 
-    @Column(nullable = false)
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Listing> listings;
 
-
+    @Column(nullable = false)
     public String getName() {
         return name;
     }
@@ -23,6 +21,7 @@ public class Category extends IdDateTimeModel {
         this.name = name;
     }
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Listing> getListings() {
         return listings;
     }

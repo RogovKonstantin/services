@@ -1,4 +1,5 @@
 package com.example.demo.services.dtos;
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.List;
 
@@ -6,7 +7,7 @@ public class ListingDTO {
     private UUID id;
     private String title;
     private String description;
-    private Double price;
+    private BigDecimal price;
     private String location;
     private String status;
     private UUID categoryId;
@@ -38,11 +39,11 @@ public class ListingDTO {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

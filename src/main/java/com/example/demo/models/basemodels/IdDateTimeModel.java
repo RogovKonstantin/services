@@ -10,20 +10,15 @@ import java.util.UUID;
 @MappedSuperclass
 public class IdDateTimeModel {
 
+    private UUID id;
+
+    private LocalDateTime created;
+
+    private LocalDateTime modified;
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
-
-    @CreationTimestamp
-    @Column(name = "created", nullable = false, updatable = false)
-    private LocalDateTime created;
-
-    @UpdateTimestamp
-    @Column(name = "modified", nullable = false)
-    private LocalDateTime modified;
-
-
     public UUID getId() {
         return id;
     }
@@ -32,6 +27,8 @@ public class IdDateTimeModel {
         this.id = id;
     }
 
+    @CreationTimestamp
+    @Column(name = "created", nullable = false, updatable = false)
     public LocalDateTime getCreated() {
         return created;
     }
@@ -40,6 +37,8 @@ public class IdDateTimeModel {
         this.created = created;
     }
 
+    @UpdateTimestamp
+    @Column(name = "modified", nullable = false)
     public LocalDateTime getModified() {
         return modified;
     }

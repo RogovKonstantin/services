@@ -2,22 +2,20 @@ package com.example.demo.models;
 
 import com.example.demo.models.basemodels.IdDateTimeModel;
 import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
 @Table(name = "users")
 public class User extends IdDateTimeModel {
 
-    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false, unique = true)
     private String email;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Listing> listings;
 
-
+    @Column(nullable = false, unique = true)
     public String getUsername() {
         return username;
     }
@@ -26,6 +24,7 @@ public class User extends IdDateTimeModel {
         this.username = username;
     }
 
+    @Column(nullable = false, unique = true)
     public String getEmail() {
         return email;
     }
@@ -34,6 +33,7 @@ public class User extends IdDateTimeModel {
         this.email = email;
     }
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Listing> getListings() {
         return listings;
     }

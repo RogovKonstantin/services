@@ -7,17 +7,13 @@ import jakarta.persistence.*;
 @Table(name = "audit_logs")
 public class AuditLog extends IdDateTimeModel {
 
-    @Column(nullable = false)
     private String action;
 
-    @Column(nullable = false)
     private String details;
 
-    @ManyToOne
-    @JoinColumn(name = "listing_id", nullable = false)
     private Listing listing;
 
-
+    @Column(nullable = false)
     public String getAction() {
         return action;
     }
@@ -26,6 +22,7 @@ public class AuditLog extends IdDateTimeModel {
         this.action = action;
     }
 
+    @Column(nullable = false)
     public String getDetails() {
         return details;
     }
@@ -34,6 +31,8 @@ public class AuditLog extends IdDateTimeModel {
         this.details = details;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "listing_id", nullable = false)
     public Listing getListing() {
         return listing;
     }

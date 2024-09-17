@@ -10,34 +10,23 @@ import java.util.List;
 @Table(name = "listings")
 public class Listing extends IdDateTimeModel {
 
-    @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(nullable = false)
     private String location;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ListingStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "listing", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AuditLog> auditLogs;
 
-
+    @Column(nullable = false)
     public String getTitle() {
         return title;
     }
@@ -46,6 +35,7 @@ public class Listing extends IdDateTimeModel {
         this.title = title;
     }
 
+    @Column(nullable = false)
     public String getDescription() {
         return description;
     }
@@ -54,6 +44,7 @@ public class Listing extends IdDateTimeModel {
         this.description = description;
     }
 
+    @Column(nullable = false)
     public BigDecimal getPrice() {
         return price;
     }
@@ -62,6 +53,7 @@ public class Listing extends IdDateTimeModel {
         this.price = price;
     }
 
+    @Column(nullable = false)
     public String getLocation() {
         return location;
     }
@@ -70,6 +62,8 @@ public class Listing extends IdDateTimeModel {
         this.location = location;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     public ListingStatus getStatus() {
         return status;
     }
@@ -78,6 +72,8 @@ public class Listing extends IdDateTimeModel {
         this.status = status;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
     public Category getCategory() {
         return category;
     }
@@ -86,6 +82,8 @@ public class Listing extends IdDateTimeModel {
         this.category = category;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     public User getUser() {
         return user;
     }
@@ -94,6 +92,7 @@ public class Listing extends IdDateTimeModel {
         this.user = user;
     }
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "listing", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<AuditLog> getAuditLogs() {
         return auditLogs;
     }
