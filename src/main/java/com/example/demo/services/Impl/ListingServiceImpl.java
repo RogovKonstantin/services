@@ -1,5 +1,6 @@
 package com.example.demo.services.Impl;
 
+import com.example.demo.controllers.ListingController;
 import com.example.demo.models.ListingStatus;
 import com.example.demo.services.dtos.ListingDTO;
 import com.example.demo.models.Category;
@@ -11,6 +12,8 @@ import com.example.demo.repositories.UserRepository;
 import com.example.demo.services.ListingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,5 +81,14 @@ public class ListingServiceImpl implements ListingService {
         return listings.stream()
                 .map(listing -> modelMapper.map(listing, ListingDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public EntityModel<ListingDTO> createListingModel(ListingDTO listingDTO) {
+        EntityModel<ListingDTO> model = EntityModel.of(listingDTO,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ListingController.class).getListingById(listingDTO.getId())).withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ListingController.class).getAllListings()).withRel("listings"),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ListingController.class).updateListing(listingDTO.getId(), listingDTO)).withRel("update"));
+        return model;
     }
 }

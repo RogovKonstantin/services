@@ -25,7 +25,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Create Users
         User user1 = new User();
         user1.setUsername("john_doe");
         user1.setEmail("john@example.com");
@@ -56,7 +55,6 @@ public class DataInitializer implements CommandLineRunner {
         user6.setEmail("dave@example.com");
         userRepository.save(user6);
 
-        // Create Categories
         Category category1 = new Category();
         category1.setName("Electronics");
         categoryRepository.save(category1);
@@ -77,7 +75,6 @@ public class DataInitializer implements CommandLineRunner {
         category5.setName("Clothing");
         categoryRepository.save(category5);
 
-        // Create Listings and corresponding AuditLogs
         createListingWithAuditLog("Samsung Galaxy S21", "Latest Samsung smartphone with excellent features.", new BigDecimal("799.99"), "New York", user1, category1);
         createListingWithAuditLog("Wooden Dining Table", "Stylish wooden dining table for modern homes.", new BigDecimal("499.99"), "Los Angeles", user2, category2);
         createListingWithAuditLog("Mystery Novel Collection", "A collection of mystery novels perfect for book lovers.", new BigDecimal("29.99"), "Chicago", user3, category3);
@@ -89,23 +86,21 @@ public class DataInitializer implements CommandLineRunner {
         createListingWithAuditLog("Plush Teddy Bear", "Soft teddy bear perfect for children of all ages.", new BigDecimal("15.00"), "Miami", user4, category4);
         createListingWithAuditLog("Fashionable Summer Dress", "Stylish summer dress available in multiple sizes.", new BigDecimal("59.99"), "San Francisco", user5, category5);
 
-        // Log to console
         System.out.println("Database has been populated with initial data.");
     }
 
-    // Helper method to create a listing and audit log
+
     private void createListingWithAuditLog(String title, String description, BigDecimal price, String location, User user, Category category) {
         Listing listing = new Listing();
         listing.setTitle(title);
         listing.setDescription(description);
-        listing.setPrice(price); // update to accept BigDecimal
+        listing.setPrice(price);
         listing.setLocation(location);
         listing.setUser(user);
         listing.setCategory(category);
         listing.setStatus(ListingStatus.PENDING);
         listingRepository.save(listing);
 
-        // Create corresponding audit log
         AuditLog auditLog = new AuditLog();
         auditLog.setAction("CREATE");
         auditLog.setListing(listing);

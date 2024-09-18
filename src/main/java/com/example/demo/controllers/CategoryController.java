@@ -3,48 +3,51 @@ package com.example.demo.controllers;
 import com.example.demo.services.dtos.CategoryDTO;
 import com.example.demo.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
 
-
     private CategoryService categoryService;
 
     @PostMapping("/create")
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
+    public EntityModel<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
         CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
-        return ResponseEntity.ok(createdCategory);
+        return categoryService.createCategoryModel(createdCategory, true);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable UUID id, @RequestBody CategoryDTO categoryDTO) {
+    @PutMapping("/update/{id}")
+    public EntityModel<CategoryDTO> updateCategory(@PathVariable UUID id, @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
-        return ResponseEntity.ok(updatedCategory);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable UUID id) {
-        categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+        return categoryService.createCategoryModel(updatedCategory, false);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable UUID id) {
+    public EntityModel<CategoryDTO> getCategoryById(@PathVariable UUID id) {
         CategoryDTO category = categoryService.getCategoryById(id);
-        return ResponseEntity.ok(category);
+        return categoryService.createCategoryModel(category, false);
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
-        List<CategoryDTO> categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(categories);
+    public CollectionModel<EntityModel<CategoryDTO>> getAllCategories() {
+        List<EntityModel<CategoryDTO>> categories = categoryService.getAllCategories().stream()
+                .map(category -> categoryService.createCategoryModel(category, false))
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(categories,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CategoryController.class).getAllCategories()).withSelfRel());
     }
+
+
     @Autowired
     public void setCategoryService(CategoryService categoryService) {
         this.categoryService = categoryService;

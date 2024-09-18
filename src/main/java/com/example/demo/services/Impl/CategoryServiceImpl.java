@@ -1,11 +1,14 @@
 package com.example.demo.services.Impl;
 
+import com.example.demo.controllers.CategoryController;
 import com.example.demo.services.dtos.CategoryDTO;
 import com.example.demo.models.Category;
 import com.example.demo.repositories.CategoryRepository;
 import com.example.demo.services.CategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,5 +59,18 @@ public class CategoryServiceImpl implements CategoryService {
         return categories.stream()
                 .map(category -> modelMapper.map(category, CategoryDTO.class))
                 .collect(Collectors.toList());
+    }
+    @Override
+    public EntityModel<CategoryDTO> createCategoryModel(CategoryDTO categoryDTO, boolean isCreation) {
+        EntityModel<CategoryDTO> model = EntityModel.of(categoryDTO,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CategoryController.class).getCategoryById(categoryDTO.getId())).withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CategoryController.class).getAllCategories()).withRel("categories"));
+
+        if (isCreation) {
+            model.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CategoryController.class)
+                    .updateCategory(categoryDTO.getId(), categoryDTO)).withRel("update"));
+        }
+
+        return model;
     }
 }
