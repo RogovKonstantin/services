@@ -15,10 +15,8 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private ModelMapper modelMapper;
 
     @Override
@@ -56,5 +54,15 @@ public class UserServiceImpl implements UserService {
         return users.stream()
                 .map(user -> modelMapper.map(user, UserDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Autowired
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 }

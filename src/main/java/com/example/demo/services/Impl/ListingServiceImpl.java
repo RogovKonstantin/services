@@ -23,16 +23,12 @@ import java.util.stream.Collectors;
 @Service
 public class ListingServiceImpl implements ListingService {
 
-    @Autowired
     private ListingRepository listingRepository;
 
-    @Autowired
     private CategoryRepository categoryRepository;
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private ModelMapper modelMapper;
 
     @Override
@@ -90,5 +86,24 @@ public class ListingServiceImpl implements ListingService {
                 WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ListingController.class).getAllListings()).withRel("listings"),
                 WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ListingController.class).updateListing(listingDTO.getId(), listingDTO)).withRel("update"));
         return model;
+    }
+
+    @Autowired
+    public void setListingRepository(ListingRepository listingRepository) {
+        this.listingRepository = listingRepository;
+    }
+
+    @Autowired
+    public void setCategoryRepository(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 }

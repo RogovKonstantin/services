@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    @Autowired
+
     private CategoryRepository categoryRepository;
 
-    @Autowired
+
     private ModelMapper modelMapper;
 
     @Override
@@ -60,6 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .map(category -> modelMapper.map(category, CategoryDTO.class))
                 .collect(Collectors.toList());
     }
+
     @Override
     public EntityModel<CategoryDTO> createCategoryModel(CategoryDTO categoryDTO, boolean isCreation) {
         EntityModel<CategoryDTO> model = EntityModel.of(categoryDTO,
@@ -72,5 +73,15 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         return model;
+    }
+
+    @Autowired
+    public void setCategoryRepository(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
+    @Autowired
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 }
