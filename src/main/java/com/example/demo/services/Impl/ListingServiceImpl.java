@@ -54,7 +54,7 @@ public class ListingServiceImpl implements ListingService {
         listing.setCategory(category);
         listing.setUser(user);
         listing.setStatus(ListingStatus.PENDING);
-        Listing savedListing = listingRepository.save(listing);
+        Listing savedListing = listingRepository.saveAndFlush(listing);
         return modelMapper.map(savedListing, ListingDTO.class);
     }
 
@@ -63,8 +63,14 @@ public class ListingServiceImpl implements ListingService {
     public ListingDTO updateListing(UUID id, ListingDTO listingDTO) {
         Listing listing = listingRepository.findById(id)
                 .orElseThrow(() -> new ListingNotFoundException(id));
-        modelMapper.map(listingDTO, listing);
-        Listing updatedListing = listingRepository.save(listing);
+
+
+        listing.setTitle(listingDTO.getTitle());
+        listing.setDescription(listingDTO.getDescription());
+        listing.setPrice(listingDTO.getPrice());
+        listing.setLocation(listingDTO.getLocation());
+
+        Listing updatedListing = listingRepository.saveAndFlush(listing);
         return modelMapper.map(updatedListing, ListingDTO.class);
     }
 
