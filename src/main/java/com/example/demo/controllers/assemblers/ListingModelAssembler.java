@@ -33,8 +33,7 @@ public class ListingModelAssembler extends RepresentationModelAssemblerSupport<L
         PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(
                 listings.getSize(),
                 listings.getNumber(),
-                listings.getTotalElements(),
-                listings.getTotalPages()
+                listings.getTotalElements()
         );
 
         PagedModel<EntityModel<ListingDTO>> pagedModel = PagedModel.of(listings.map(this::toModel).getContent(), metadata);
