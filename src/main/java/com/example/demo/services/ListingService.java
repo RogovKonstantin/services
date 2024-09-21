@@ -2,6 +2,8 @@ package com.example.demo.services;
 
 
 import com.example.demo.services.dtos.ListingDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 
 import java.util.List;
@@ -12,6 +14,5 @@ public interface ListingService {
     ListingDTO updateListing(UUID id, ListingDTO listingDTO);
     void deleteListing(UUID id);
     ListingDTO getListingById(UUID id);
-    List<ListingDTO> getAllListings();
-    public EntityModel<ListingDTO> createListingModel(ListingDTO listingDTO);
+    Page<ListingDTO> getAllListings(Pageable pageable);
 }

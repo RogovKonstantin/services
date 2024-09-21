@@ -1,19 +1,27 @@
 package com.example.demo.services.dtos;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 public class ListingDTO {
     private UUID id;
+
+    @NotBlank(message = "Title is required")
     private String title;
+
     private String description;
+
+    @NotNull(message = "Price is required")
     private BigDecimal price;
+
     private String location;
     private String status;
     private UUID categoryId;
     private UUID userId;
     private List<UUID> auditLogIds;
-
 
     public UUID getId() {
         return id;

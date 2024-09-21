@@ -1,53 +1,70 @@
 package com.example.demo.controllers;
 
+import com.example.demo.controllers.assemblers.ListingModelAssembler;
 import com.example.demo.services.dtos.ListingDTO;
 import com.example.demo.services.ListingService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/listings")
 public class ListingController {
 
-    private ListingService listingService;
+    private final ListingService listingService;
+    private final ListingModelAssembler assembler;
 
     @Autowired
-    public ListingController(ListingService listingService) {
+    public ListingController(ListingService listingService, ListingModelAssembler assembler) {
         this.listingService = listingService;
+        this.assembler = assembler;
     }
 
     @GetMapping("/{id}")
-    public EntityModel<ListingDTO> getListingById(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<ListingDTO>> getListingById(@PathVariable UUID id) {
         ListingDTO listingDTO = listingService.getListingById(id);
-        return listingService.createListingModel(listingDTO);
+        return ResponseEntity.ok(assembler.toModel(listingDTO));
     }
 
-    @PostMapping("/create")
-    public EntityModel<ListingDTO> createListing(@RequestBody ListingDTO listingDTO) {
+    @PostMapping
+    public ResponseEntity<EntityModel<ListingDTO>> createListing(@Valid @RequestBody ListingDTO listingDTO) {
         ListingDTO createdListing = listingService.createListing(listingDTO);
-        return listingService.createListingModel(createdListing);
+        return ResponseEntity.created(assembler.toModel(createdListing).getRequiredLink("self").toUri())
+                .body(assembler.toModel(createdListing));
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<ListingDTO>> getAllListings() {
-        List<EntityModel<ListingDTO>> listings = listingService.getAllListings().stream()
-                .map(listingService::createListingModel)
-                .collect(Collectors.toList());
+    public ResponseEntity<PagedModel<EntityModel<ListingDTO>>> getAllListings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
 
-        return CollectionModel.of(listings,
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ListingController.class).getAllListings()).withSelfRel());
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<ListingDTO> listings = listingService.getAllListings(pageable);
+        PagedModel<EntityModel<ListingDTO>> pagedModel = assembler.toPagedModel(listings, pageable);
+
+        return ResponseEntity.ok(pagedModel);
     }
 
-    @PutMapping("update/{id}")
-    public EntityModel<ListingDTO> updateListing(@PathVariable UUID id, @RequestBody ListingDTO listingDTO) {
+    @PutMapping("/{id}")
+    public ResponseEntity<EntityModel<ListingDTO>> updateListing(@PathVariable UUID id,
+                                                                 @Valid @RequestBody ListingDTO listingDTO) {
         ListingDTO updatedListing = listingService.updateListing(id, listingDTO);
-        return listingService.createListingModel(updatedListing);
+        return ResponseEntity.ok(assembler.toModel(updatedListing));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteListing(@PathVariable UUID id) {
+        listingService.deleteListing(id);
+        return ResponseEntity.noContent().build();
     }
 }
