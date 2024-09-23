@@ -1,66 +1,68 @@
 package com.example.demo.controllers;
 
-import com.example.demo.services.dtos.UserDTO;
+import com.example.demo.controllers.assemblers.UserModelAssembler;
 import com.example.demo.services.UserService;
+import com.example.demo.services.dtos.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
+    private final UserModelAssembler assembler;
 
-
-    @PostMapping("/create")
-    public EntityModel<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        UserDTO createdUser = userService.createUser(userDTO);
-        return EntityModel.of(createdUser,
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserById(createdUser.getId())).withSelfRel(),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getAllUsers()).withRel("users"),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).updateUser(createdUser.getId(), new UserDTO())).withRel("update"));
+    @Autowired
+    public UserController(UserService userService, UserModelAssembler assembler) {
+        this.userService = userService;
+        this.assembler = assembler;
     }
-
-    @PutMapping("/update/{id}")
-    public EntityModel<UserDTO> updateUser(@PathVariable UUID id, @RequestBody UserDTO userDTO) {
-        UserDTO updatedUser = userService.updateUser(id, userDTO);
-        return EntityModel.of(updatedUser,
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserById(updatedUser.getId())).withSelfRel(),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getAllUsers()).withRel("users"));
-    }
-
 
     @GetMapping("/{id}")
-    public EntityModel<UserDTO> getUserById(@PathVariable UUID id) {
-        UserDTO user = userService.getUserById(id);
-        return EntityModel.of(user,
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserById(id)).withSelfRel(),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getAllUsers()).withRel("users"),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).updateUser(id, new UserDTO())).withRel("update"));
+    public ResponseEntity<EntityModel<UserDTO>> getUserById(@PathVariable UUID id) {
+        UserDTO userDTO = userService.getUserById(id);
+        return ResponseEntity.ok(assembler.toModel(userDTO));
+    }
+
+    @PostMapping
+    public ResponseEntity<EntityModel<UserDTO>> createUser(@Valid @RequestBody UserDTO userDTO) {
+        UserDTO createdUser = userService.createUser(userDTO);
+        return ResponseEntity.created(assembler.toModel(createdUser).getRequiredLink("self").toUri())
+                .body(assembler.toModel(createdUser));
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<UserDTO>> getAllUsers() {
-        List<EntityModel<UserDTO>> users = userService.getAllUsers().stream()
-                .map(user -> EntityModel.of(user,
-                        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserById(user.getId())).withSelfRel(),
-                        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getAllUsers()).withRel("users")))
-                .collect(Collectors.toList());
+    public ResponseEntity<PagedModel<EntityModel<UserDTO>>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
 
-        return CollectionModel.of(users,
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getAllUsers()).withSelfRel());
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserDTO> users = userService.getAllUsers(pageable);
+        PagedModel<EntityModel<UserDTO>> pagedModel = assembler.toPagedModel(users, pageable);
+
+        return ResponseEntity.ok(pagedModel);
     }
 
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    @PutMapping("/{id}")
+    public ResponseEntity<EntityModel<UserDTO>> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDTO userDTO) {
+        UserDTO updatedUser = userService.updateUser(id, userDTO);
+        return ResponseEntity.ok(assembler.toModel(updatedUser));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

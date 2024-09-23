@@ -1,11 +1,13 @@
 package com.example.demo.services.dtos;
 
+import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 public class CategoryDTO {
     private UUID id;
-    private String name;
 
+    @NotBlank(message = "Name is required")
+    private String name;
 
     public UUID getId() {
         return id;

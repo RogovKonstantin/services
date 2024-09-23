@@ -22,18 +22,6 @@ public class AuditLogController {
         return ResponseEntity.ok(createdAuditLog);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AuditLogDTO> updateAuditLog(@PathVariable UUID id, @RequestBody AuditLogDTO auditLogDTO) {
-        AuditLogDTO updatedAuditLog = auditLogService.updateAuditLog(id, auditLogDTO);
-        return ResponseEntity.ok(updatedAuditLog);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAuditLog(@PathVariable UUID id) {
-        auditLogService.deleteAuditLog(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<AuditLogDTO> getAuditLogById(@PathVariable UUID id) {
         AuditLogDTO auditLog = auditLogService.getAuditLogById(id);

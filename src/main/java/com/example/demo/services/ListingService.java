@@ -12,6 +12,9 @@ import java.util.UUID;
 public interface ListingService {
     ListingDTO createListing(ListingDTO listingDTO);
     ListingDTO updateListing(UUID id, ListingDTO listingDTO);
+
+    ListingDTO patchListing(UUID id, ListingDTO listingDTO);
+
     void deleteListing(UUID id);
     ListingDTO getListingById(UUID id);
     Page<ListingDTO> getAllListings(Pageable pageable);

@@ -35,20 +35,6 @@ public class AuditLogServiceImpl implements AuditLogService {
         return modelMapper.map(savedAuditLog, AuditLogDTO.class);
     }
 
-    @Override
-    public AuditLogDTO updateAuditLog(UUID id, AuditLogDTO auditLogDTO) {
-        AuditLog auditLog = auditLogRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("AuditLog not found"));
-
-        modelMapper.map(auditLogDTO, auditLog);
-        AuditLog updatedAuditLog = auditLogRepository.save(auditLog);
-        return modelMapper.map(updatedAuditLog, AuditLogDTO.class);
-    }
-
-    @Override
-    public void deleteAuditLog(UUID id) {
-        auditLogRepository.deleteById(id);
-    }
 
     @Override
     public AuditLogDTO getAuditLogById(UUID id) {

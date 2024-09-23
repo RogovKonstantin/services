@@ -6,8 +6,6 @@ import java.util.UUID;
 
 public interface AuditLogService {
     AuditLogDTO createAuditLog(AuditLogDTO auditLogDTO);
-    AuditLogDTO updateAuditLog(UUID id, AuditLogDTO auditLogDTO);
-    void deleteAuditLog(UUID id);
     AuditLogDTO getAuditLogById(UUID id);
     List<AuditLogDTO> getAllAuditLogs();
 }

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 @RestController
@@ -45,15 +46,18 @@ public class ListingController {
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ListingDTO>>> getAllListings(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "3") int size){
 
         Pageable pageable = PageRequest.of(page, size);
 
         Page<ListingDTO> listings = listingService.getAllListings(pageable);
+
+
         PagedModel<EntityModel<ListingDTO>> pagedModel = assembler.toPagedModel(listings, pageable);
 
         return ResponseEntity.ok(pagedModel);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<EntityModel<ListingDTO>> updateListing(@PathVariable UUID id,
@@ -61,6 +65,15 @@ public class ListingController {
         ListingDTO updatedListing = listingService.updateListing(id, listingDTO);
         return ResponseEntity.ok(assembler.toModel(updatedListing));
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<EntityModel<ListingDTO>> patchListing(
+            @PathVariable UUID id,
+            @Valid @RequestBody ListingDTO listingDTO) {
+        ListingDTO updatedListing = listingService.patchListing(id, listingDTO);
+        return ResponseEntity.ok(assembler.toModel(updatedListing));
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteListing(@PathVariable UUID id) {
