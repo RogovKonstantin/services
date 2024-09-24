@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-
+@Component
 public class DataInitializer implements CommandLineRunner {
 
     private UserRepository userRepository;

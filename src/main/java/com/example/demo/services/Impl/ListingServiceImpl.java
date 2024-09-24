@@ -99,19 +99,21 @@ public class ListingServiceImpl implements ListingService {
     public void deleteListing(UUID id) {
         Listing listing = listingRepository.findById(id)
                 .orElseThrow(() -> new ListingNotFoundException(id));
-        listingRepository.delete(listing);
-    }
-
-    @Override
-    public ListingDTO getListingById(UUID id) {
-        Listing listing = listingRepository.findById(id)
-                .orElseThrow(() -> new ListingNotFoundException(id));
-        return modelMapper.map(listing, ListingDTO.class);
+        listing.setDeleted(true);
+        listingRepository.saveAndFlush(listing);
     }
 
     @Override
     public Page<ListingDTO> getAllListings(Pageable pageable) {
-        Page<Listing> listingPage = listingRepository.findAll(pageable);
+        Page<Listing> listingPage = listingRepository.findAllByDeletedFalse(pageable);
         return listingPage.map(listing -> modelMapper.map(listing, ListingDTO.class));
     }
+
+    @Override
+    public ListingDTO getListingById(UUID id) {
+        Listing listing = listingRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ListingNotFoundException(id));
+        return modelMapper.map(listing, ListingDTO.class);
+    }
+
 }

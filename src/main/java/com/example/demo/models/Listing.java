@@ -25,6 +25,7 @@ public class Listing extends IdDateTimeModel {
     private User user;
 
     private List<AuditLog> auditLogs;
+    private boolean deleted = false;
 
     @Column(nullable = false)
     public String getTitle() {
@@ -99,5 +100,14 @@ public class Listing extends IdDateTimeModel {
 
     public void setAuditLogs(List<AuditLog> auditLogs) {
         this.auditLogs = auditLogs;
+    }
+
+    @Column(nullable = false)
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

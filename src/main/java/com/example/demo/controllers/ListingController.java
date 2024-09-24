@@ -75,9 +75,10 @@ public class ListingController {
     }
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteListing(@PathVariable UUID id) {
+    @PatchMapping("/{id}/delete")
+    public ResponseEntity<Void> softDeleteListing(@PathVariable UUID id) {
         listingService.deleteListing(id);
         return ResponseEntity.noContent().build();
     }
+
 }

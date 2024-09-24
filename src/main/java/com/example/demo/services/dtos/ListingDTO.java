@@ -23,6 +23,7 @@ public class ListingDTO {
     private UUID userId;
     private List<UUID> auditLogIds;
 
+
     public UUID getId() {
         return id;
     }
@@ -94,4 +95,6 @@ public class ListingDTO {
     public void setAuditLogIds(List<UUID> auditLogIds) {
         this.auditLogIds = auditLogIds;
     }
+
+
 }
