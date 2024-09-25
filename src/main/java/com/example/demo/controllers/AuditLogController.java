@@ -14,7 +14,12 @@ import java.util.UUID;
 public class AuditLogController {
 
 
-    private AuditLogService auditLogService;
+    private final AuditLogService auditLogService;
+
+    @Autowired
+    public AuditLogController(AuditLogService auditLogService) {
+        this.auditLogService = auditLogService;
+    }
 
     @PostMapping("/create")
     public ResponseEntity<AuditLogDTO> createAuditLog(@RequestBody AuditLogDTO auditLogDTO) {
@@ -34,8 +39,4 @@ public class AuditLogController {
         return ResponseEntity.ok(auditLogs);
     }
 
-    @Autowired
-    public void setAuditLogService(AuditLogService auditLogService) {
-        this.auditLogService = auditLogService;
-    }
 }
