@@ -1,0 +1,87 @@
+query q1{
+  getListingById(id: "609d845e-bc02-4c5a-b780-3ad4b7101852") {
+    id
+    title
+    description
+    price
+    location
+    status
+    categoryId
+    userId
+  }
+}
+
+
+query q2{
+  getAllListings(page: 0, size: 10) {
+      id
+      title
+      description
+      price
+      location
+      status
+      categoryId
+      userId
+
+  }
+}
+
+mutation m1{
+  createListing(
+    title: "New Listing Title",
+    description: "This is a new listing",
+    price: 100.50,
+    location: "Location A",
+    categoryId: "afbaf33a-b690-43a2-9c96-8768da086f37",
+    userId: "b5dfea6a-7a78-4c14-95a8-a8f1114f14a3"
+  ) {
+    id
+    title
+    description
+    price
+    location
+    categoryId
+    userId
+    status
+  }
+}
+
+mutation m2{
+  updateListing(
+    id: "25708bbf-73e9-4ad8-9fc6-45c048b3bcf9",
+    title: "Updated Title",
+    description: "Updated Description",
+    price: 120.75,
+    location: "Updated Location"
+  ) {
+    id
+    title
+    description
+    price
+    location
+    status
+  }
+}
+
+mutation m3{
+  patchListing(
+    id: "25708bbf-73e9-4ad8-9fc6-45c048b3bcf9",
+    title: "Patched Title",
+    price: 150.00
+  ) {
+    id
+    title
+    description
+    price
+    location
+    status
+  }
+}
+
+
+mutation m4 {
+  deleteListing(id: "25708bbf-73e9-4ad8-9fc6-45c048b3bcf9")
+}
+
+
+
