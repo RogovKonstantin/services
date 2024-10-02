@@ -54,10 +54,10 @@ public class UserController {
         return ResponseEntity.ok(pagedModel);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<UserDTO>> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDTO userDTO) {
-        UserDTO updatedUser = userService.updateUser(id, userDTO);
-        return ResponseEntity.ok(assembler.toModel(updatedUser));
+    @PatchMapping("/{id}")
+    public ResponseEntity<EntityModel<UserDTO>> patchUser(@PathVariable UUID id, @Valid @RequestBody UserDTO userDTO) {
+        UserDTO patchedUser = userService.patchUser(id, userDTO);
+        return ResponseEntity.ok(assembler.toModel(patchedUser));
     }
 
     @DeleteMapping("/{id}")

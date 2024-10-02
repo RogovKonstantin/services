@@ -56,22 +56,6 @@ public class ListingServiceImpl implements ListingService {
         return modelMapper.map(savedListing, ListingDTO.class);
     }
 
-
-    @Override
-    public ListingDTO updateListing(UUID id, ListingDTO listingDTO) {
-        Listing listing = listingRepository.findById(id)
-                .orElseThrow(() -> new ListingNotFoundException(id));
-
-
-        listing.setTitle(listingDTO.getTitle());
-        listing.setDescription(listingDTO.getDescription());
-        listing.setPrice(listingDTO.getPrice());
-        listing.setLocation(listingDTO.getLocation());
-
-        Listing updatedListing = listingRepository.saveAndFlush(listing);
-        return modelMapper.map(updatedListing, ListingDTO.class);
-    }
-
     @Override
     public ListingDTO patchListing(UUID id, ListingDTO listingDTO) {
         Listing listing = listingRepository.findById(id)
@@ -90,13 +74,13 @@ public class ListingServiceImpl implements ListingService {
             listing.setLocation(listingDTO.getLocation());
         }
 
-        Listing updatedListing = listingRepository.saveAndFlush(listing);
-        return modelMapper.map(updatedListing, ListingDTO.class);
+        Listing patchedListing = listingRepository.saveAndFlush(listing);
+        return modelMapper.map(patchedListing, ListingDTO.class);
     }
 
 
     @Override
-    public void deleteListing(UUID id) {
+    public void softDeleteListing(UUID id) {
         Listing listing = listingRepository.findById(id)
                 .orElseThrow(() -> new ListingNotFoundException(id));
         listing.setDeleted(true);

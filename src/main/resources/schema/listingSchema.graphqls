@@ -1,11 +1,10 @@
-type Query {
+extend type Query {
     getListingById(id: String!): ListingDTO
     getAllListings(page: Int, size: Int): [ListingDTO]
 }
 
-type Mutation {
+extend type Mutation {
     createListing(title: String!, description: String!, price: Float!, location: String!, categoryId: String!, userId: String!): ListingDTO
-    updateListing(id: String!, title: String, description: String, price: Float, location: String): ListingDTO
     deleteListing(id: String!): Boolean
     patchListing(id: ID!, title: String, description: String, price: Float, location: String): ListingDTO
 }

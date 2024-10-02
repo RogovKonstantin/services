@@ -23,7 +23,6 @@ public class ListingModelAssembler extends RepresentationModelAssemblerSupport<L
         EntityModel<ListingDTO> model = EntityModel.of(listingDTO);
 
         model.add(linkTo(methodOn(ListingController.class).getListingById(listingDTO.getId())).withSelfRel());
-        model.add(linkTo(methodOn(ListingController.class).updateListing(listingDTO.getId(), listingDTO)).withRel("update"));
         model.add(linkTo(methodOn(ListingController.class).softDeleteListing(listingDTO.getId())).withRel("delete"));
         model.add(linkTo(methodOn(ListingController.class).patchListing(listingDTO.getId(),listingDTO)).withRel("patch"));
 

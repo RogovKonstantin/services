@@ -25,6 +25,23 @@ query q2{
 
   }
 }
+query q3 {
+  getUserById(id: "some-uuid") {
+    id
+    username
+    email
+    listingIds
+  }
+}
+query q4 {
+  getAllUsers(page: 0, size: 10) {
+      id
+      username
+      email
+      listingIds
+    }
+
+}
 
 mutation m1{
   createListing(
@@ -47,23 +64,6 @@ mutation m1{
 }
 
 mutation m2{
-  updateListing(
-    id: "25708bbf-73e9-4ad8-9fc6-45c048b3bcf9",
-    title: "Updated Title",
-    description: "Updated Description",
-    price: 120.75,
-    location: "Updated Location"
-  ) {
-    id
-    title
-    description
-    price
-    location
-    status
-  }
-}
-
-mutation m3{
   patchListing(
     id: "25708bbf-73e9-4ad8-9fc6-45c048b3bcf9",
     title: "Patched Title",
@@ -78,9 +78,30 @@ mutation m3{
   }
 }
 
+mutation m3 {
+  deleteListing(id: "25708bbf-73e9-4ad8-9fc6-45c048b3bcf9")
+}
 
 mutation m4 {
-  deleteListing(id: "25708bbf-73e9-4ad8-9fc6-45c048b3bcf9")
+  createUser(username: "JohnDoe", email: "john.doe@example.com") {
+    id
+    username
+    email
+    listingIds
+  }
+}
+
+mutation m5 {
+  patchUser(id: "some-uuid", username: "UpdatedUsername", email: "updated.email@example.com") {
+    id
+    username
+    email
+    listingIds
+  }
+}
+
+mutation m6 {
+  deleteUser(id: "some-uuid")
 }
 
 

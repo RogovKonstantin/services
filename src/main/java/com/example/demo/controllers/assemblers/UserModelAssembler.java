@@ -22,7 +22,7 @@ public class UserModelAssembler extends RepresentationModelAssemblerSupport<User
     public EntityModel<UserDTO> toModel(UserDTO userDTO) {
         EntityModel<UserDTO> model = EntityModel.of(userDTO);
         model.add(linkTo(methodOn(UserController.class).getUserById(userDTO.getId())).withSelfRel());
-        model.add(linkTo(methodOn(UserController.class).updateUser(userDTO.getId(), userDTO)).withRel("update"));
+        model.add(linkTo(methodOn(UserController.class).patchUser(userDTO.getId(), userDTO)).withRel("update"));
         model.add(linkTo(methodOn(UserController.class).deleteUser(userDTO.getId())).withRel("delete"));
         return model;
     }

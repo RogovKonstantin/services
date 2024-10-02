@@ -17,7 +17,6 @@ public class UserDTO {
 
     private List<UUID> listingIds;
 
-    // Getters and Setters
     public UUID getId() {
         return id;
     }

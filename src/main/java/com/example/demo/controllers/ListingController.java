@@ -59,25 +59,18 @@ public class ListingController {
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<ListingDTO>> updateListing(@PathVariable UUID id,
-                                                                 @Valid @RequestBody ListingDTO listingDTO) {
-        ListingDTO updatedListing = listingService.updateListing(id, listingDTO);
-        return ResponseEntity.ok(assembler.toModel(updatedListing));
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<EntityModel<ListingDTO>> patchListing(
             @PathVariable UUID id,
             @Valid @RequestBody ListingDTO listingDTO) {
-        ListingDTO updatedListing = listingService.patchListing(id, listingDTO);
-        return ResponseEntity.ok(assembler.toModel(updatedListing));
+        ListingDTO patchedListing = listingService.patchListing(id, listingDTO);
+        return ResponseEntity.ok(assembler.toModel(patchedListing));
     }
 
 
     @PatchMapping("/{id}/delete")
     public ResponseEntity<Void> softDeleteListing(@PathVariable UUID id) {
-        listingService.deleteListing(id);
+        listingService.softDeleteListing(id);
         return ResponseEntity.noContent().build();
     }
 
