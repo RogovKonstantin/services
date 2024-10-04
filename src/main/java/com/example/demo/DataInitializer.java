@@ -15,13 +15,11 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-
 public class DataInitializer implements CommandLineRunner {
 
     private UserRepository userRepository;
     private CategoryRepository categoryRepository;
     private ListingRepository listingRepository;
-    private AuditLogRepository auditLogRepository;
 
     @Override
     public void run(String... args) {
@@ -75,22 +73,21 @@ public class DataInitializer implements CommandLineRunner {
         category5.setName("Clothing");
         categoryRepository.save(category5);
 
-        createListingWithAuditLog("Samsung Galaxy S21", "Latest Samsung smartphone with excellent features.", new BigDecimal("799.99"), "New York", user1, category1);
-        createListingWithAuditLog("Wooden Dining Table", "Stylish wooden dining table for modern homes.", new BigDecimal("499.99"), "Los Angeles", user2, category2);
-        createListingWithAuditLog("Mystery Novel Collection", "A collection of mystery novels perfect for book lovers.", new BigDecimal("29.99"), "Chicago", user3, category3);
-        createListingWithAuditLog("Kids Toy Set", "A fun toy set for kids ages 3-5.", new BigDecimal("19.99"), "Miami", user4, category4);
-        createListingWithAuditLog("Leather Jacket", "Stylish leather jacket for adults.", new BigDecimal("199.99"), "San Francisco", user5, category5);
-        createListingWithAuditLog("Vintage Record Player", "High-quality vintage record player for music enthusiasts.", new BigDecimal("249.99"), "Austin", user6, category1);
-        createListingWithAuditLog("Office Desk", "Spacious office desk with a modern look.", new BigDecimal("349.99"), "New York", user1, category2);
-        createListingWithAuditLog("Learning Python Book", "A comprehensive guide to learning Python programming.", new BigDecimal("34.99"), "Chicago", user3, category3);
-        createListingWithAuditLog("Plush Teddy Bear", "Soft teddy bear perfect for children of all ages.", new BigDecimal("15.00"), "Miami", user4, category4);
-        createListingWithAuditLog("Fashionable Summer Dress", "Stylish summer dress available in multiple sizes.", new BigDecimal("59.99"), "San Francisco", user5, category5);
+        createListing("Samsung Galaxy S21", "Latest Samsung smartphone with excellent features.", new BigDecimal("799.99"), "New York", user1, category1);
+        createListing("Wooden Dining Table", "Stylish wooden dining table for modern homes.", new BigDecimal("499.99"), "Los Angeles", user2, category2);
+        createListing("Mystery Novel Collection", "A collection of mystery novels perfect for book lovers.", new BigDecimal("29.99"), "Chicago", user3, category3);
+        createListing("Kids Toy Set", "A fun toy set for kids ages 3-5.", new BigDecimal("19.99"), "Miami", user4, category4);
+        createListing("Leather Jacket", "Stylish leather jacket for adults.", new BigDecimal("199.99"), "San Francisco", user5, category5);
+        createListing("Vintage Record Player", "High-quality vintage record player for music enthusiasts.", new BigDecimal("249.99"), "Austin", user6, category1);
+        createListing("Office Desk", "Spacious office desk with a modern look.", new BigDecimal("349.99"), "New York", user1, category2);
+        createListing("Learning Python Book", "A comprehensive guide to learning Python programming.", new BigDecimal("34.99"), "Chicago", user3, category3);
+        createListing("Plush Teddy Bear", "Soft teddy bear perfect for children of all ages.", new BigDecimal("15.00"), "Miami", user4, category4);
+        createListing("Fashionable Summer Dress", "Stylish summer dress available in multiple sizes.", new BigDecimal("59.99"), "San Francisco", user5, category5);
 
         System.out.println("Database has been populated with initial data.");
     }
 
-
-    private void createListingWithAuditLog(String title, String description, BigDecimal price, String location, User user, Category category) {
+    private void createListing(String title, String description, BigDecimal price, String location, User user, Category category) {
         Listing listing = new Listing();
         listing.setTitle(title);
         listing.setDescription(description);
@@ -98,25 +95,17 @@ public class DataInitializer implements CommandLineRunner {
         listing.setLocation(location);
         listing.setUser(user);
         listing.setCategory(category);
-        listing.setStatus(ListingStatus.PENDING);
+        listing.setStatus(ListingStatus.ACCEPTED);
         listingRepository.save(listing);
-
-        AuditLog auditLog = new AuditLog();
-        auditLog.setAction("CREATE");
-        auditLog.setListing(listing);
-        auditLog.setDetails("Created listing for: " + title);
-        auditLogRepository.save(auditLog);
     }
+
+
 
     @Autowired
     public void setListingRepository(ListingRepository listingRepository) {
         this.listingRepository = listingRepository;
     }
 
-    @Autowired
-    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
-        this.auditLogRepository = auditLogRepository;
-    }
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {

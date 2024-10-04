@@ -88,13 +88,6 @@ public class ListingDTO {
         this.userId = userId;
     }
 
-    public List<UUID> getAuditLogIds() {
-        return auditLogIds;
-    }
-
-    public void setAuditLogIds(List<UUID> auditLogIds) {
-        this.auditLogIds = auditLogIds;
-    }
 
 
 }
