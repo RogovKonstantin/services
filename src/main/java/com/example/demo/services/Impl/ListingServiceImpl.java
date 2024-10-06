@@ -52,7 +52,7 @@ public class ListingServiceImpl implements ListingService {
         listing.setStatus(ListingStatus.PENDING);
         Listing savedListing = listingRepository.saveAndFlush(listing);
 
-        logAction("CREATE", savedListing, "Created a new listing");
+        logAction(String.valueOf(OperationTypes.CREATE), savedListing, "Created a new listing");
 
         return modelMapper.map(savedListing, ListingDTO.class);
     }
@@ -77,7 +77,7 @@ public class ListingServiceImpl implements ListingService {
 
         Listing patchedListing = listingRepository.saveAndFlush(listing);
 
-        logAction("UPDATE", patchedListing, "Updated listing details");
+        logAction(String.valueOf(OperationTypes.UPDATE), patchedListing, "Updated listing details");
 
         return modelMapper.map(patchedListing, ListingDTO.class);
     }
@@ -89,7 +89,7 @@ public class ListingServiceImpl implements ListingService {
         listing.setDeleted(true);
         listingRepository.saveAndFlush(listing);
 
-        logAction("DELETE", listing, "Soft deleted listing");
+        logAction(String.valueOf(OperationTypes.SOFT_DELETE), listing, "Soft deleted listing");
     }
 
     @Override
