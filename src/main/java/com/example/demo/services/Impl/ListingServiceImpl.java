@@ -1,5 +1,7 @@
 package com.example.demo.services.Impl;
 
+import com.example.demo.controllers.exceptions.entityNotFoundExceptions.CategoryNotFoundException;
+import com.example.demo.controllers.exceptions.entityNotFoundExceptions.UserNotFoundException;
 import com.example.demo.models.*;
 import com.example.demo.repositories.*;
 import com.example.demo.services.ListingService;
@@ -43,9 +45,9 @@ public class ListingServiceImpl implements ListingService {
         listing.setLocation(listingDTO.getLocation());
 
         Category category = categoryRepository.findById(listingDTO.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Category ID: " + listingDTO.getCategoryId()));
+                .orElseThrow(() -> new CategoryNotFoundException(listingDTO.getCategoryId()));
         User user = userRepository.findById(listingDTO.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid User ID: " + listingDTO.getUserId()));
+                .orElseThrow(() -> new UserNotFoundException(listingDTO.getUserId()));
 
         listing.setCategory(category);
         listing.setUser(user);

@@ -17,11 +17,16 @@ import java.util.stream.Collectors;
 @Service
 public class AuditLogServiceImpl implements AuditLogService {
 
-    private AuditLogRepository auditLogRepository;
+    private final AuditLogRepository auditLogRepository;
+    private final ListingRepository listingRepository;
+    private final ModelMapper modelMapper;
 
-    private ListingRepository listingRepository;
-
-    private ModelMapper modelMapper;
+    @Autowired
+    public AuditLogServiceImpl(AuditLogRepository auditLogRepository, ListingRepository listingRepository, ModelMapper modelMapper) {
+        this.auditLogRepository = auditLogRepository;
+        this.listingRepository = listingRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public AuditLogDTO createAuditLog(AuditLogDTO auditLogDTO) {
@@ -49,20 +54,5 @@ public class AuditLogServiceImpl implements AuditLogService {
         return auditLogs.stream()
                 .map(auditLog -> modelMapper.map(auditLog, AuditLogDTO.class))
                 .collect(Collectors.toList());
-    }
-
-    @Autowired
-    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
-        this.auditLogRepository = auditLogRepository;
-    }
-
-    @Autowired
-    public void setListingRepository(ListingRepository listingRepository) {
-        this.listingRepository = listingRepository;
-    }
-
-    @Autowired
-    public void setModelMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
     }
 }
