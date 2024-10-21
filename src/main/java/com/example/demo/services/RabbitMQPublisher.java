@@ -1,8 +1,10 @@
 package com.example.demo.services;
 
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.example.demo.config.RabbitMQConfiguration;
 
 @Service
 public class RabbitMQPublisher {
@@ -14,8 +16,18 @@ public class RabbitMQPublisher {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendMessage(String queueName, Object message) {
-        rabbitTemplate.convertAndSend(queueName, message);
-    }
-}
+    public void sendMessage(String routingKey, Object message) {
+        try {
+            rabbitTemplate.convertAndSend(RabbitMQConfiguration.exchangeName, routingKey, message);
+            System.out.println("Message sent successfully: " + message);
+        } catch (AmqpException e) {
+            System.err.println("Failed to send message: " + e.getMessage());
 
+        } catch (Exception e) {
+            System.err.println("Unexpected error occurred while sending message" + e.getMessage());
+
+        }
+    }
+
+
+}

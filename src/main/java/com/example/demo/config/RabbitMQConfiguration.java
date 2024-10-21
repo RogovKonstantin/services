@@ -27,21 +27,21 @@ public class RabbitMQConfiguration {
     public static final String createQueueName = "createQueue";
     public static final String updateQueueName = "updateQueue";
     public static final String deleteQueueName = "deleteQueue";
-    static final String exchangeName = "listingExchange";
+    public static final String exchangeName = "listingExchange";
 
     @Bean
     public Queue createQueue() {
-        return new Queue(createQueueName, false);
+        return new Queue(createQueueName, true);
     }
 
     @Bean
     public Queue updateQueue() {
-        return new Queue(updateQueueName, false);
+        return new Queue(updateQueueName, true);
     }
 
     @Bean
     public Queue deleteQueue() {
-        return new Queue(deleteQueueName, false);
+        return new Queue(deleteQueueName, true);
     }
 
     @Bean

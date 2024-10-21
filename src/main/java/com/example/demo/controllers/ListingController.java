@@ -4,8 +4,6 @@ import com.example.demo.controllers.assemblers.ListingModelAssembler;
 import com.example.demo.services.dtos.ListingDTO;
 import com.example.demo.services.ListingService;
 import com.example.demo.services.RabbitMQPublisher;
-import com.example.demo.config.RabbitMQConfiguration;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +41,7 @@ public class ListingController {
     public ResponseEntity<EntityModel<ListingDTO>> createListing(@Valid @RequestBody ListingDTO listingDTO) {
         ListingDTO createdListing = listingService.createListing(listingDTO);
 
-        rabbitMQPublisher.sendMessage(RabbitMQConfiguration.createQueueName, createdListing);
+        rabbitMQPublisher.sendMessage("listings.create", createdListing);
 
         return ResponseEntity.created(assembler.toModel(createdListing).getRequiredLink("self").toUri())
                 .body(assembler.toModel(createdListing));
@@ -67,8 +65,8 @@ public class ListingController {
             @Valid @RequestBody ListingDTO listingDTO) {
         ListingDTO patchedListing = listingService.patchListing(id, listingDTO);
 
-        // Send to the update queue
-        rabbitMQPublisher.sendMessage(RabbitMQConfiguration.updateQueueName, patchedListing);
+
+        rabbitMQPublisher.sendMessage("listings.update", patchedListing);
 
         return ResponseEntity.ok(assembler.toModel(patchedListing));
     }
@@ -77,9 +75,7 @@ public class ListingController {
     public ResponseEntity<Void> softDeleteListing(@PathVariable UUID id) {
         listingService.softDeleteListing(id);
 
-        // Send to the delete queue
-        rabbitMQPublisher.sendMessage(RabbitMQConfiguration.deleteQueueName, "Deleted listing with ID: " + id);
-
+        rabbitMQPublisher.sendMessage("listings.delete", "Deleted listing with ID: " + id);
         return ResponseEntity.noContent().build();
     }
 }
