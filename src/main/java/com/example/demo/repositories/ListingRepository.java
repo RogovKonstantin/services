@@ -13,5 +13,8 @@ import java.util.UUID;
 @Repository
 public interface ListingRepository extends JpaRepository<Listing, UUID> {
     Page<Listing> findAllByDeletedFalseAndStatus(Pageable pageable, ListingStatus status);
+
     Optional<Listing> findByIdAndDeletedFalseAndStatus(UUID id, ListingStatus status);
+
+    Optional<Listing> findByIdAndDeletedFalse(UUID id);
 }

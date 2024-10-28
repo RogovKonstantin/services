@@ -24,7 +24,6 @@ public class Listing extends IdDateTimeModel {
 
     private User user;
 
-    private List<AuditLog> auditLogs;
     private boolean deleted = false;
 
     @Column(nullable = false)
@@ -91,15 +90,6 @@ public class Listing extends IdDateTimeModel {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "listing", cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<AuditLog> getAuditLogs() {
-        return auditLogs;
-    }
-
-    public void setAuditLogs(List<AuditLog> auditLogs) {
-        this.auditLogs = auditLogs;
     }
 
     @Column(nullable = false)

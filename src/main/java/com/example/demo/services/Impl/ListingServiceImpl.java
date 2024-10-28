@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -23,17 +22,14 @@ public class ListingServiceImpl implements ListingService {
     private final ModelMapper modelMapper;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-    private final AuditLogRepository auditLogRepository;
 
     @Autowired
     public ListingServiceImpl(ListingRepository listingRepository, ModelMapper modelMapper,
-                              CategoryRepository categoryRepository, UserRepository userRepository,
-                              AuditLogRepository auditLogRepository) {
+                              CategoryRepository categoryRepository, UserRepository userRepository) {
         this.listingRepository = listingRepository;
         this.modelMapper = modelMapper;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
-        this.auditLogRepository = auditLogRepository;
     }
 
     @Override
@@ -54,14 +50,14 @@ public class ListingServiceImpl implements ListingService {
         listing.setStatus(ListingStatus.PENDING);
         Listing savedListing = listingRepository.saveAndFlush(listing);
 
-        logAction(String.valueOf(OperationTypes.CREATE), savedListing, "Created a new listing");
+
 
         return modelMapper.map(savedListing, ListingDTO.class);
     }
 
     @Override
     public ListingDTO patchListing(UUID id, ListingDTO listingDTO) {
-        Listing listing = listingRepository.findById(id)
+        Listing listing = listingRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ListingNotFoundException(id));
 
         if (listingDTO.getTitle() != null) {
@@ -79,19 +75,18 @@ public class ListingServiceImpl implements ListingService {
 
         Listing patchedListing = listingRepository.saveAndFlush(listing);
 
-        logAction(String.valueOf(OperationTypes.UPDATE), patchedListing, "Updated listing details");
+
 
         return modelMapper.map(patchedListing, ListingDTO.class);
     }
 
     @Override
     public void softDeleteListing(UUID id) {
-        Listing listing = listingRepository.findById(id)
+        Listing listing = listingRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ListingNotFoundException(id));
         listing.setDeleted(true);
         listingRepository.saveAndFlush(listing);
 
-        logAction(String.valueOf(OperationTypes.SOFT_DELETE), listing, "Soft deleted listing");
     }
 
     @Override
@@ -108,11 +103,4 @@ public class ListingServiceImpl implements ListingService {
     }
 
 
-    private void logAction(String action, Listing listing, String details) {
-        AuditLog auditLog = new AuditLog();
-        auditLog.setAction(action);
-        auditLog.setListing(listing);
-        auditLog.setDetails(details);
-        auditLogRepository.save(auditLog);
-    }
 }
