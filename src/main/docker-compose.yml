@@ -21,7 +21,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/demo
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/app
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_RABBITMQ_HOST: rabbitmq
@@ -40,7 +40,11 @@ services:
       context: C:/projects/rabbitmqconsumerdemo
       dockerfile: Dockerfile
     environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/logs
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
     depends_on:
       producer:
         condition: service_healthy
