@@ -1,3 +1,4 @@
+/*
 package com.example.demo.controllers.exceptions.entityNotFoundExceptions;
 
 import java.util.UUID;
@@ -7,3 +8,4 @@ public class UserNotFoundException extends EntityNotFoundException {
         super("User", id);
     }
 }
+*/

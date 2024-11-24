@@ -1,8 +1,6 @@
 package com.example.demo.services.Impl;
 
-
-import com.example.demo.controllers.exceptions.entityNotFoundExceptions.UserNotFoundException;
-
+import com.example.contract.exceptions.UserNotFoundException;
 import com.example.demo.models.Listing;
 import com.example.demo.models.User;
 import com.example.demo.repositories.UserRepository;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

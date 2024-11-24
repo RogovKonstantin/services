@@ -1,3 +1,4 @@
+/*
 package com.example.demo.controllers.assemblers;
 
 import com.example.demo.controllers.CategoryController;
@@ -55,3 +56,4 @@ public class CategoryModelAssembler extends RepresentationModelAssemblerSupport<
         return pagedModel;
     }
 }
+*/

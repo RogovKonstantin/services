@@ -1,3 +1,4 @@
+/*
 package com.example.demo.controllers.assemblers;
 
 import com.example.demo.controllers.UserController;
@@ -51,3 +52,4 @@ public class UserModelAssembler extends RepresentationModelAssemblerSupport<User
         return pagedModel;
     }
 }
+*/

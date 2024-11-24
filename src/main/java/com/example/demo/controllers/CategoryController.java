@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
-import com.example.demo.controllers.assemblers.CategoryModelAssembler;
+import com.example.contract.controllers.CategoryApi;
+import com.example.contract.dtos.*;
 import com.example.demo.services.CategoryService;
 import com.example.demo.services.dtos.CategoryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,59 +12,105 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.UUID;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/categories")
-public class CategoryController {
+public class CategoryController implements CategoryApi {
 
     private final CategoryService categoryService;
-    private final CategoryModelAssembler assembler;
 
     @Autowired
-    public CategoryController(CategoryService categoryService, CategoryModelAssembler assembler) {
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
-        this.assembler = assembler;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<CategoryDTO>> getCategoryById(@PathVariable UUID id) {
+    @Override
+    public ResponseEntity<EntityModel<CategoryResponse>> getCategoryById(UUID id) {
         CategoryDTO categoryDTO = categoryService.getCategoryById(id);
-        return ResponseEntity.ok(assembler.toModel(categoryDTO));
+        CategoryResponse response = toResponse(categoryDTO);
+        return ResponseEntity.ok(toEntityModel(response));
     }
 
-    @PostMapping
-    public ResponseEntity<EntityModel<CategoryDTO>> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+    @Override
+    public ResponseEntity<EntityModel<CategoryResponse>> createCategory(CategoryRequest categoryRequest) {
+        CategoryDTO categoryDTO = toDTO(categoryRequest);
         CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
-        return ResponseEntity.created(assembler.toModel(createdCategory).getRequiredLink("self").toUri())
-                .body(assembler.toModel(createdCategory));
+        CategoryResponse response = toResponse(createdCategory);
+        return ResponseEntity.created(
+                linkTo(methodOn(CategoryController.class).getCategoryById(response.id())).toUri()
+        ).body(toEntityModel(response));
     }
 
-    @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<CategoryDTO>>> getAllCategories (
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size)  {
-
+    @Override
+    public ResponseEntity<PagedModel<EntityModel<CategoryResponse>>> getAllCategories(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<CategoryDTO> categories = categoryService.getAllCategories(pageable);
-        PagedModel<EntityModel<CategoryDTO>> pagedModel = assembler.toPagedModel(categories, pageable);
+        Page<CategoryDTO> categoryDTOS = categoryService.getAllCategories(pageable);
+
+        Page<CategoryResponse> responsePage = categoryDTOS.map(this::toResponse);
+
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(
+                responsePage.getSize(),
+                responsePage.getNumber(),
+                responsePage.getTotalElements()
+        );
+
+        List<EntityModel<CategoryResponse>> content = responsePage.getContent().stream()
+                .map(this::toEntityModel)
+                .toList();
+
+        PagedModel<EntityModel<CategoryResponse>> pagedModel = PagedModel.of(content, metadata);
+
+        if (responsePage.hasNext()) {
+            pagedModel.add(linkTo(methodOn(CategoryController.class)
+                    .getAllCategories(pageable.next().getPageNumber(), pageable.getPageSize()))
+                    .withRel("next"));
+        }
+        if (responsePage.hasPrevious()) {
+            pagedModel.add(linkTo(methodOn(CategoryController.class)
+                    .getAllCategories(pageable.previousOrFirst().getPageNumber(), pageable.getPageSize()))
+                    .withRel("previous"));
+        }
+        pagedModel.add(linkTo(methodOn(CategoryController.class)
+                .getAllCategories(pageable.getPageNumber(), pageable.getPageSize()))
+                .withSelfRel());
 
         return ResponseEntity.ok(pagedModel);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<CategoryDTO>> updateCategory(@PathVariable UUID id,
-                                                                   @Valid @RequestBody CategoryDTO categoryDTO) {
-        CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
-        return ResponseEntity.ok(assembler.toModel(updatedCategory));
+    @Override
+    public ResponseEntity<EntityModel<CategoryResponse>> updateCategory(UUID id, CategoryRequest categoryRequest) {
+        CategoryDTO categoryDTO = toDTO(categoryRequest);
+        CategoryDTO patchedCategory = categoryService.updateCategory(id, categoryDTO);
+        CategoryResponse response = toResponse(patchedCategory);
+        return ResponseEntity.ok(toEntityModel(response));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable UUID id) {
+    @Override
+    public ResponseEntity<Void> deleteCategory(UUID id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    private CategoryDTO toDTO(CategoryRequest request) {
+        CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setName(request.name());
+        return categoryDTO;
+    }
+
+    private CategoryResponse toResponse(CategoryDTO dto) {
+        return new CategoryResponse(dto.getId(), dto.getName());
+    }
+
+    private EntityModel<CategoryResponse> toEntityModel(CategoryResponse response) {
+        return EntityModel.of(response,
+                linkTo(methodOn(CategoryController.class).getCategoryById(response.id())).withSelfRel(),
+                linkTo(methodOn(CategoryController.class).getAllCategories(0, 3)).withRel("all"),
+                linkTo(methodOn(CategoryController.class).updateCategory(response.id(), null)).withRel("update"),
+                linkTo(methodOn(CategoryController.class).deleteCategory(response.id())).withRel("delete"));
+    }
 }
+

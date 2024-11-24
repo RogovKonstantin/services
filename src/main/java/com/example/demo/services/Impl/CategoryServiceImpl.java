@@ -1,16 +1,15 @@
 package com.example.demo.services.Impl;
 
+import com.example.contract.exceptions.CategoryNotFoundException;
 import com.example.demo.models.Category;
 import com.example.demo.repositories.CategoryRepository;
 import com.example.demo.services.CategoryService;
 import com.example.demo.services.dtos.CategoryDTO;
-import com.example.demo.controllers.exceptions.entityNotFoundExceptions.CategoryNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.UUID;
 
 @Service

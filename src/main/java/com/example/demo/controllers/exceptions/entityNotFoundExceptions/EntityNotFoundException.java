@@ -1,3 +1,4 @@
+/*
 package com.example.demo.controllers.exceptions.entityNotFoundExceptions;
 
 import org.springframework.http.HttpStatus;
@@ -11,3 +12,4 @@ public class EntityNotFoundException extends RuntimeException {
         super(entityName + " not found with ID: " + id);
     }
 }
+*/
