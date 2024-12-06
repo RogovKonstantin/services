@@ -1,6 +1,9 @@
 package com.example.demo.services.dtos;
 
+
+
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;

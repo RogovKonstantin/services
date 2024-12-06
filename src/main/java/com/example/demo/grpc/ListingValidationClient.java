@@ -8,14 +8,12 @@ import io.grpc.ManagedChannelBuilder;
 
 public class ListingValidationClient {
 
-    private static final String HOST = "localhost";
-    private static final int PORT = 9600;
 
     public static ListingValidationProto.ValidationResponse validateListing(
             String title, String description, double price, String location, String status, String categoryId, String userId) {
 
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(HOST, PORT)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9600)
                 .usePlaintext()
                 .build();
 

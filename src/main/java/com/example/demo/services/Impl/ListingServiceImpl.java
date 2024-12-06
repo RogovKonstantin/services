@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.validation.Valid;
 import java.util.UUID;
 
 @Service
@@ -43,18 +45,15 @@ public class ListingServiceImpl implements ListingService {
                         listingDTO.getDescription(),
                         listingDTO.getPrice().doubleValue(),
                         listingDTO.getLocation(),
-                        listingDTO.getStatus(), // Directly use status as a String
+                        listingDTO.getStatus(),
                         listingDTO.getCategoryId().toString(),
                         listingDTO.getUserId().toString()
                 );
 
-        // Check the validation result
         if (!validationResponse.getIsValid()) {
             throw new ListingValidationException("Listing validation failed: " + validationResponse.getMessage());
         }
 
-
-        // Proceed with saving the listing
         Listing listing = new Listing();
         listing.setTitle(listingDTO.getTitle());
         listing.setDescription(listingDTO.getDescription());
