@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_package = "com.example.validation";
+option java_outer_classname = "ListingValidationProto";
+
+service ListingValidationService {
+  rpc ValidateListing (ListingRequest) returns (ValidationResponse);
+}
+
+message ListingRequest {
+  string title = 1;
+  string description = 2;
+  double price = 3;
+  string location = 4;
+  string status=5;
+  string categoryId = 6;
+  string userId = 7;
+}
+
+message ValidationResponse {
+  bool isValid = 1;
+  string message = 2;
+}

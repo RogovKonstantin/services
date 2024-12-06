@@ -2,11 +2,14 @@ package com.example.demo.services.Impl;
 
 import com.example.contract.exceptions.CategoryNotFoundException;
 import com.example.contract.exceptions.ListingNotFoundException;
+import com.example.contract.exceptions.ListingValidationException;
 import com.example.contract.exceptions.UserNotFoundException;
+import com.example.demo.grpc.ListingValidationClient;
 import com.example.demo.models.*;
 import com.example.demo.repositories.*;
 import com.example.demo.services.ListingService;
 import com.example.demo.services.dtos.ListingDTO;
+import com.example.validation.ListingValidationProto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,6 +36,25 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public ListingDTO createListing(ListingDTO listingDTO) {
+        listingDTO.setStatus(ListingStatus.PENDING.toString());
+        ListingValidationProto.ValidationResponse validationResponse =
+                ListingValidationClient.validateListing(
+                        listingDTO.getTitle(),
+                        listingDTO.getDescription(),
+                        listingDTO.getPrice().doubleValue(),
+                        listingDTO.getLocation(),
+                        listingDTO.getStatus(), // Directly use status as a String
+                        listingDTO.getCategoryId().toString(),
+                        listingDTO.getUserId().toString()
+                );
+
+        // Check the validation result
+        if (!validationResponse.getIsValid()) {
+            throw new ListingValidationException("Listing validation failed: " + validationResponse.getMessage());
+        }
+
+
+        // Proceed with saving the listing
         Listing listing = new Listing();
         listing.setTitle(listingDTO.getTitle());
         listing.setDescription(listingDTO.getDescription());
@@ -46,13 +68,13 @@ public class ListingServiceImpl implements ListingService {
 
         listing.setCategory(category);
         listing.setUser(user);
-        listing.setStatus(ListingStatus.PENDING);
+        listing.setStatus(ListingStatus.ACCEPTED);
+
         Listing savedListing = listingRepository.saveAndFlush(listing);
-
-
-
         return modelMapper.map(savedListing, ListingDTO.class);
     }
+
+
 
     @Override
     public ListingDTO patchListing(UUID id, ListingDTO listingDTO) {
