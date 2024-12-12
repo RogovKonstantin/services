@@ -27,21 +27,37 @@ public class RabbitMQConfiguration {
     public static final String createQueueName = "createQueue";
     public static final String updateQueueName = "updateQueue";
     public static final String deleteQueueName = "deleteQueue";
-    public static final String exchangeName = "listingExchange";
+    public static final String validateQueueName = "validateQueue";
+    public static final String validationResponseQueueName = "validationResponseQueue";
+    public static final String exchangeName = "listings.exchange";
+    public static final String exchangeNameValidation = "validation.exchange";
+
+
+
+
 
     @Bean
     public Queue createQueue() {
-        return new Queue(createQueueName, true);
+        return new Queue(createQueueName, false);
     }
 
     @Bean
     public Queue updateQueue() {
-        return new Queue(updateQueueName, true);
+        return new Queue(updateQueueName, false);
     }
 
     @Bean
     public Queue deleteQueue() {
-        return new Queue(deleteQueueName, true);
+        return new Queue(deleteQueueName, false);
+    }
+
+    @Bean
+    public Queue validateQueue() {
+        return new Queue(validateQueueName, false);
+    }
+    @Bean
+    public Queue validationResponseQueue() {
+        return new Queue(validationResponseQueueName, false);
     }
 
     @Bean
@@ -62,6 +78,16 @@ public class RabbitMQConfiguration {
     @Bean
     public Binding deleteBinding(Queue deleteQueue, TopicExchange listingExchange) {
         return BindingBuilder.bind(deleteQueue).to(listingExchange).with("listings.delete");
+    }
+
+    @Bean
+    public Binding validationBinding(Queue validateQueue,TopicExchange listingExchange){
+        return BindingBuilder.bind(validateQueue).to(listingExchange).with("listings.validate");
+    }
+
+    @Bean
+    public Binding validationResponseBinding(Queue validationResponseQueue  ,TopicExchange listingExchange){
+        return BindingBuilder.bind(validationResponseQueue).to(listingExchange).with("listings.validate.response");
     }
 
 
