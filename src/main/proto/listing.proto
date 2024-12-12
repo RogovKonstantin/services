@@ -10,11 +10,6 @@ service ListingValidationService {
 message ListingRequest {
   string title = 1;
   string description = 2;
-  double price = 3;
-  string location = 4;
-  string status=5;
-  string categoryId = 6;
-  string userId = 7;
 }
 
 message ValidationResponse {

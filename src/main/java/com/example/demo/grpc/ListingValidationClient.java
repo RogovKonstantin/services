@@ -10,7 +10,7 @@ public class ListingValidationClient {
 
 
     public static ListingValidationProto.ValidationResponse validateListing(
-            String title, String description, double price, String location, String status, String categoryId, String userId) {
+            String title, String description) {
 
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9600)
@@ -25,19 +25,11 @@ public class ListingValidationClient {
         ListingValidationProto.ListingRequest request = ListingValidationProto.ListingRequest.newBuilder()
                 .setTitle(title)
                 .setDescription(description)
-                .setPrice(price)
-                .setLocation(location)
-                .setStatus(status)
-                .setCategoryId(categoryId)
-                .setUserId(userId)
                 .build();
 
 
         ListingValidationProto.ValidationResponse response = stub.validateListing(request);
-
-
         channel.shutdown();
-
         return response;
     }
 }

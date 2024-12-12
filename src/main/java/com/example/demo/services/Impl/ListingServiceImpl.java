@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
 import java.util.UUID;
 
 @Service
@@ -36,24 +35,9 @@ public class ListingServiceImpl implements ListingService {
         this.userRepository = userRepository;
     }
 
+
     @Override
     public ListingDTO createListing(ListingDTO listingDTO) {
-        listingDTO.setStatus(ListingStatus.PENDING.toString());
-        ListingValidationProto.ValidationResponse validationResponse =
-                ListingValidationClient.validateListing(
-                        listingDTO.getTitle(),
-                        listingDTO.getDescription(),
-                        listingDTO.getPrice().doubleValue(),
-                        listingDTO.getLocation(),
-                        listingDTO.getStatus(),
-                        listingDTO.getCategoryId().toString(),
-                        listingDTO.getUserId().toString()
-                );
-
-        if (!validationResponse.getIsValid()) {
-            throw new ListingValidationException("Listing validation failed: " + validationResponse.getMessage());
-        }
-
         Listing listing = new Listing();
         listing.setTitle(listingDTO.getTitle());
         listing.setDescription(listingDTO.getDescription());
@@ -67,11 +51,22 @@ public class ListingServiceImpl implements ListingService {
 
         listing.setCategory(category);
         listing.setUser(user);
-        listing.setStatus(ListingStatus.ACCEPTED);
 
-        Listing savedListing = listingRepository.saveAndFlush(listing);
+        ListingValidationProto.ValidationResponse validationResponse =
+                ListingValidationClient.validateListing(listing.getTitle(), listing.getDescription());
+
+        if (!validationResponse.getIsValid()) {
+            listing.setStatus(ListingStatus.REJECTED);
+            listingRepository.save(listing);
+            throw new ListingValidationException("Listing validation failed: " + validationResponse.getMessage());
+        }
+
+        listing.setStatus(ListingStatus.ACCEPTED);
+        Listing savedListing = listingRepository.save(listing);
         return modelMapper.map(savedListing, ListingDTO.class);
     }
+
+
 
 
 
@@ -94,7 +89,6 @@ public class ListingServiceImpl implements ListingService {
         }
 
         Listing patchedListing = listingRepository.saveAndFlush(listing);
-
 
 
         return modelMapper.map(patchedListing, ListingDTO.class);

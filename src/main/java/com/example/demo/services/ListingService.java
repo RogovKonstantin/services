@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface ListingService {
     ListingDTO createListing(ListingDTO listingDTO);
+
     ListingDTO patchListing(UUID id, ListingDTO listingDTO);
     void softDeleteListing(UUID id);
     ListingDTO getListingById(UUID id);
