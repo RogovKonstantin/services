@@ -30,9 +30,6 @@ public class RabbitMQConfiguration {
     public static final String validationResponseQueueName = "validationResponseQueue";
     public static final String exchangeName = "listings.exchange";
 
-    public static final String exchangeNameValidation = "validation.exchange";
-
-
     @Bean
     public Queue updateQueue() {
         return new Queue(updateQueueName, false);
