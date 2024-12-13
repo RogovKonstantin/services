@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ListingServiceImpl implements ListingService {
@@ -43,7 +44,6 @@ public class ListingServiceImpl implements ListingService {
         this.rabbitMQPublisher = rabbitMQPublisher;
     }
 
-
     @Override
     public ListingDTO createListing(ListingDTO listingDTO) {
         Listing listing = new Listing();
@@ -60,28 +60,27 @@ public class ListingServiceImpl implements ListingService {
         listing.setCategory(category);
         listing.setUser(user);
 
-        // Listing is created as PENDING until validation result is known
         listing.setStatus(ListingStatus.PENDING);
         Listing savedListing = listingRepository.save(listing);
 
-        // Create a validation request message
         ValidationRequestMessage requestMessage = new ValidationRequestMessage(
                 savedListing.getId(),
                 savedListing.getTitle(),
                 savedListing.getDescription()
         );
-
-        // Send to validationQueue to be processed asynchronously
         rabbitMQPublisher.sendMessage("listings.validate", requestMessage);
-
-        // Return PENDING listing. Client can check back later or be notified when it's accepted/rejected.
         return modelMapper.map(savedListing, ListingDTO.class);
     }
 
-    // Listen for validation responses on a separate queue
     @RabbitListener(queues = "validationResponseQueue")
     public void handleValidationResponse(ValidationResponseMessage responseMessage) {
-        // Now responseMessage is already deserialized
+
+        try {
+            TimeUnit.SECONDS.sleep(15);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+
+        }
         Listing listing = listingRepository.findById(responseMessage.getListingId())
                 .orElseThrow(() -> new ListingNotFoundException(responseMessage.getListingId()));
 
@@ -90,16 +89,13 @@ public class ListingServiceImpl implements ListingService {
         } else {
             listing.setStatus(ListingStatus.REJECTED);
         }
-
         listingRepository.save(listing);
     }
-
 
     @Override
     public ListingDTO patchListing(UUID id, ListingDTO listingDTO) {
         Listing listing = listingRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ListingNotFoundException(id));
-
         if (listingDTO.getTitle() != null) {
             listing.setTitle(listingDTO.getTitle());
         }
@@ -114,8 +110,6 @@ public class ListingServiceImpl implements ListingService {
         }
 
         Listing patchedListing = listingRepository.saveAndFlush(listing);
-
-
         return modelMapper.map(patchedListing, ListingDTO.class);
     }
 
@@ -125,7 +119,6 @@ public class ListingServiceImpl implements ListingService {
                 .orElseThrow(() -> new ListingNotFoundException(id));
         listing.setDeleted(true);
         listingRepository.saveAndFlush(listing);
-
     }
 
     @Override
@@ -140,6 +133,4 @@ public class ListingServiceImpl implements ListingService {
                 .orElseThrow(() -> new ListingNotFoundException(id));
         return modelMapper.map(listing, ListingDTO.class);
     }
-
-
 }

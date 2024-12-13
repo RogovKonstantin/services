@@ -24,22 +24,14 @@ public class RabbitMQConfiguration {
         return new Jackson2JsonMessageConverter();
     }
 
-    public static final String createQueueName = "createQueue";
     public static final String updateQueueName = "updateQueue";
     public static final String deleteQueueName = "deleteQueue";
     public static final String validateQueueName = "validateQueue";
     public static final String validationResponseQueueName = "validationResponseQueue";
     public static final String exchangeName = "listings.exchange";
+
     public static final String exchangeNameValidation = "validation.exchange";
 
-
-
-
-
-    @Bean
-    public Queue createQueue() {
-        return new Queue(createQueueName, false);
-    }
 
     @Bean
     public Queue updateQueue() {
@@ -65,10 +57,6 @@ public class RabbitMQConfiguration {
         return new TopicExchange(exchangeName);
     }
 
-    @Bean
-    public Binding createBinding(Queue createQueue, TopicExchange listingExchange) {
-        return BindingBuilder.bind(createQueue).to(listingExchange).with("listings.create");
-    }
 
     @Bean
     public Binding updateBinding(Queue updateQueue, TopicExchange listingExchange) {

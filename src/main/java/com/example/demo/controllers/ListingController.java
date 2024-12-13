@@ -85,8 +85,6 @@ public class ListingController implements ListingApi {
         ListingDTO createdListing = listingService.createListing(listingDTO);
         ListingResponse response = toResponse(createdListing);
 
-       // rabbitMQPublisher.sendMessage("listings.create", response);
-
         return ResponseEntity.created(
                 linkTo(methodOn(ListingController.class).getListingById(response.id())).toUri()
         ).body(toEntityModel(response));
