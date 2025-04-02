@@ -1,0 +1,17 @@
+extend type Query {
+    getUserById(id: String!): UserDTO
+    getAllUsers(page: Int, size: Int): [UserDTO]
+}
+
+extend type Mutation {
+    createUser(username: String!, email: String!): UserDTO
+    patchUser(id: String!, username: String, email: String): UserDTO
+    deleteUser(id: String!): Boolean
+}
+
+type UserDTO {
+    id: String
+    username: String
+    email: String
+    listingIds: [String]
+}
